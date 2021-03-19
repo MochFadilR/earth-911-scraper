@@ -16,30 +16,30 @@ class UszipsSpider(scrapy.Spider):
     name = 'uszips'
     allowed_domains = ['earth911.com']
     start_urls = ['https://search.earth911.com/?what=%234+Rigid+Plastics&where=93446&max_distance=25']
-    
+
     def parse(self, response):
         listings = response.xpath('//ul[@class="result-list"]/li')
-        for listing in listings:
-            loader = ItemLoader(item=Earth911Item(), selector=listing, response=response)
-            loader.add_xpath("Name", '//h2/a/text()')
-            loader.add_xpath("Phone_Number", '//p[@class="phone"]/text()')
-            loader.add_xpath("Street_Address", '//p[@class="address1"]/text()')
-            loader.add_xpath("City", '//p[@class="address3"]/text()')
-            loader.add_xpath("State", '//p[@class="address3"]/text()')
-            loader.add_xpath("Zip_Code", '//p[@class="address3"]/text()')
+        print(listings[2])
+        listing = listings[2]
+        Name = listing.xpath('//h2/a/text()').get()
+        Phone_Number = listing.xpath('//p[@class="phone"]/text()').get()
+        Street_Address = listing.xpath('//p[@class="address1"]/text()').get()
+        City = listing.xpath('//p[@class="address3"]/text()').get().split(' ')[:-2]
+        City = ' '.join(City)
+        City = City.rstrip(',')
+        State = listing.xpath('//p[@class="address3"]/text()').get().split(' ')[-2]
+        Zip_Code = listing.xpath('//p[@class="address3"]/text()').get().split(' ')[-1]
 
-            yield loader.load_item() 
-        
-
-
-                # yield {
-                #     "Name": Name,
-                #     "Phone Number": Phone_Number,
-                #     "Street Address": Street_Address,
-                #     "City": City,
-                #     "State": State,
-                #     "Zip Code": Zip_Code
-                # }
+        # yield loader.load_item() 
+    
+        yield {
+            "Name": Name,
+            "Phone Number": Phone_Number,
+            "Street Address": Street_Address,
+            "City": City,
+            "State": State,
+            "Zip Code": Zip_Code
+        }
 
 
 # def start_requests(self):
